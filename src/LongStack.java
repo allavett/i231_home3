@@ -23,6 +23,8 @@
  * Example. LongStack.interpret ("2 15 -") should return  -13 .
  *
  * Largely based on the LIFO example from: http://enos.itcollege.ee/~jpoial/algoritmid/adt.html
+ * Getting useful information from SO: https://stackoverflow.com/questions/3481828/how-to-split-a-string-in-java
+ * Regular expressions: https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
  *
  */
 
@@ -70,7 +72,6 @@ public class LongStack {
    } // pop
 
    public void op (String s) {
-      // TODO!!!
       Long pop1 = this.pop();
       Long pop2 = this.pop();
       switch (s) {
@@ -118,7 +119,19 @@ public class LongStack {
    }
 
    public static long interpret (String pol) {
-      return 0; // TODO!!! Your code here!
+      LongStack longStack = new LongStack();
+      String[] slItems = pol
+              .replaceFirst("\\s*", "")
+              .split("\\s++");
+      for (String item: slItems) {
+         if (item.matches("[+-]?\\d+")){
+            longStack.push(Long.parseLong(item));
+         } else {
+            longStack.op(item);
+         }
+      }
+      if (longStack.lS.size() > 1) throw new RuntimeException();
+      return longStack.tos();
    }
 
 }
