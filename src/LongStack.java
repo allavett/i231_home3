@@ -40,7 +40,7 @@ public class LongStack {
       longStack.push(12L);
       longStack.push(3);
 
-      System.out.println(longStack.interpret("  "));
+      System.out.println(longStack.interpret(" + 1 2  3 + "));
    }
 
    private LongStack(LinkedList<Long> lS){ this.lS = lS;}
@@ -75,7 +75,8 @@ public class LongStack {
    } // pop
 
    public void op (String s) {
-      // As underflow check is already covered with pop method, there is no need to add the same check here
+      if (this.stEmpty()) throw new RuntimeException("Not enough numbers in the stack preceding the operator \"" + s
+              + "\"! " + "Can't complete the calculation.");
       Long pop1 = this.pop();
       Long pop2 = this.pop();
       switch (s) {
@@ -87,7 +88,7 @@ public class LongStack {
          break;
          case "/": this.push(pop2 / pop1);
          break;
-         default: throw new RuntimeException("'" + s + "' is not a valid operator!");
+         default: throw new RuntimeException("\"" + s + "\" is not a valid operator!");
       }
    }
   
@@ -127,29 +128,31 @@ public class LongStack {
       int countOperators = 0;
       if (pol.isEmpty()) throw new RuntimeException("Input is empty!");
       LongStack longStack = new LongStack();
-      String[] slItems = pol
+      String[] stringList = pol
               .replaceFirst("\\s*", "")
               .split("\\s++");
-      if (slItems[0].isEmpty()) throw new RuntimeException("No valid elements found from input!");
-      for (String item: slItems) {
+      if (stringList[0].isEmpty()) throw new RuntimeException("No valid elements found from input! " +
+              "Input contains: \"" + pol + "\"");
+      for (String item: stringList) {
          if (item.matches("[+-]?\\d+")) {
             countNumbers++;
-         } else if (item.matches("[+-/*]+")) {
+         } else if (item.matches("[+-/*]?")) {
             countOperators++;
          } else {
-            throw new RuntimeException("'" + item + "' is not a valid element!");
+            throw new RuntimeException("\"" + item + "\" is not a valid element! Input contains: \"" + pol + "\"");
          }
       }
-      if (countNumbers <= countOperators) throw new RuntimeException("Too many operators for calculation!");
-      if (countNumbers > countOperators + 1) throw new RuntimeException("Too many numbers for calculation!");
-      for (String item: slItems) {
+      if (countNumbers <= countOperators) throw new RuntimeException("Too many operators for calculation! " +
+              "Check Your input: \"" + pol + "\"");
+      if (countNumbers > countOperators + 1) throw new RuntimeException("Too many numbers for calculation! " +
+              "Check Your input: \"" + pol + "\"");
+      for (String item: stringList) {
          if (item.matches("[+-]?\\d+")){
             longStack.push(Long.parseLong(item));
          } else {
             longStack.op(item);
          }
       }
-      if (longStack.lS.size() > 1) throw new RuntimeException("Not enough operators to completely solve the arithmetic expression! Items remaining: " + longStack.toString());
       return longStack.tos();
    }
 
